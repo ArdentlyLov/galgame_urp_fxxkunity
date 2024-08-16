@@ -9,6 +9,8 @@ namespace TESTING
         DialogueSystem ds;
         TextArchitect architect;
 
+        public TextArchitect.BuildMethod bm = TextArchitect.BuildMethod.instent;
+        
         string[] lines = new string[5]
         {
             "this is a random line of dialogue",
@@ -21,11 +23,20 @@ namespace TESTING
         {
             ds = DialogueSystem.instance;
             architect = new TextArchitect(ds.dialogueContainer.dialogueText);
-            architect.buildMethod = TextArchitect.BuildMethod.typewriter;
+            architect.buildMethod = TextArchitect.BuildMethod.fade;
             architect.speed = 0.5f;
         }
         void Update()
         {
+            if (bm != architect.buildMethod)
+            {
+                architect.buildMethod = bm;
+                architect.Stop();
+            }
+
+            if (Input.GetKeyDown(KeyCode.S))
+                architect.Stop();
+            
             string longline =
                 "this is a very long tetxtthis is a very long tetxtthis is a very long tetxtthis is a very long tetxt";
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
@@ -42,7 +53,7 @@ namespace TESTING
                     architect.Build(longline);
                     // architect.Build(lines[Random.Range(0, lines.Length)]);
                 }
-            }else if (Input.GetKeyDown(KeyCode.A) || Input.GetMouseButtonDown(0))
+            }else if (Input.GetKeyDown(KeyCode.A))
             {
                 architect.Append(longline);
             }
