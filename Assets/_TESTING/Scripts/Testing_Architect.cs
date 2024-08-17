@@ -23,7 +23,7 @@ namespace TESTING
         {
             ds = DialogueSystem.instance;
             architect = new TextArchitect(ds.dialogueContainer.dialogueText);
-            architect.buildMethod = TextArchitect.BuildMethod.fade;
+            architect.buildMethod = TextArchitect.BuildMethod.effects4;
             architect.speed = 0.5f;
         }
         void Update()
@@ -50,12 +50,13 @@ namespace TESTING
                 }
                 else
                 {
-                    architect.Build(longline);
-                    // architect.Build(lines[Random.Range(0, lines.Length)]);
+                    // architect.Build(longline);
+                    architect.Build(lines[Random.Range(0, lines.Length)]);
                 }
             }else if (Input.GetKeyDown(KeyCode.A))
             {
-                architect.Append(longline);
+                architect.Append(lines[Random.Range(0, lines.Length)]);
+                // architect.Append(longline);
             }
         }
     }

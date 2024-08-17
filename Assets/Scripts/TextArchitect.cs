@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -16,11 +15,13 @@ public class TextArchitect
     private int preTextLength = 0;
     public string fullTargetText => preText + targetText;
     
+    //文字效果枚举
     public enum BuildMethod
     {
         instent,
         typewriter,
-        fade
+        fade,
+        effects4
     }
 
     public BuildMethod buildMethod = BuildMethod.typewriter;
@@ -83,6 +84,7 @@ public class TextArchitect
         buildProcess = null;
     }
 
+    //构建
     IEnumerator Building()
     {
         Prepare();
@@ -93,6 +95,9 @@ public class TextArchitect
                 break;
             case BuildMethod.fade:
                 yield return Build_Fade();
+                break;
+            case BuildMethod.effects4:
+                yield return Build_Effects();
                 break;
         }
         OnComplete();
@@ -129,6 +134,9 @@ public class TextArchitect
                 break;
             case BuildMethod.fade:
                 Prepare_Fade();
+                break;
+            case BuildMethod.effects4:
+                Prepare_Effects();
                 break;
         }
     }   
@@ -195,6 +203,24 @@ public class TextArchitect
         tmpro.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
     }
 
+    private void Prepare_Effects()
+    {
+        tmpro.text = preText;
+        if (preText != "")
+        {
+            tmpro.ForceMeshUpdate();
+            preTextLength = tmpro.textInfo.characterCount;
+        }
+        else
+        {
+            preTextLength = 0;
+        }
+
+        tmpro.text += targetText;
+        tmpro.maxVisibleCharacters = int.MaxValue;
+        tmpro.ForceMeshUpdate();
+    }
+
     private IEnumerator Build_Typewriter()
     {
         while (tmpro.maxVisibleCharacters < tmpro.textInfo.characterCount)
@@ -238,6 +264,49 @@ public class TextArchitect
                 else if(alphas[maxRange - 1] >= 255 || lastCharacterIsInvisible)
                     break;
             }
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    private IEnumerator Build_Effects()
+    {
+        Prepare_Effects();
+
+        TMP_TextInfo textInfo = tmpro.textInfo;
+        Vector3[] vertices;
+        // 存储字符顶点的数组
+        float[] phaseOffsets = new float[textInfo.characterCount];
+        // 为每个字符生成一个随机的初始相位偏移量
+        for (int i = preTextLength; i < textInfo.characterCount; i++)
+        {
+            phaseOffsets[i] = Random.Range(0f, Mathf.PI * 2);
+        }
+
+        while (true)
+        {
+            // 遍历所有可见的字符
+            for (int i = preTextLength; i < textInfo.characterCount; i++)
+            {
+                TMP_CharacterInfo charInfo = textInfo.characterInfo[i];
+                if (!charInfo.isVisible)
+                    continue;
+
+                vertices = textInfo.meshInfo[charInfo.materialReferenceIndex].vertices;
+
+                // 更新字符顶点的 Y 位置，使其上下浮动
+                float yOffset = Mathf.Sin(Time.time * speed + phaseOffsets[i]) * 0.1f;
+                // `Mathf.Sin(Time.time * speed + phaseOffsets[i])` 生成浮动值，`* 5f` 控制浮动幅度
+                
+                for (int v = 0; v < 4; v++)
+                {
+                    vertices[charInfo.vertexIndex + v].y += yOffset;
+                }
+            }
+
+            // 更新顶点数据
+            tmpro.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
+
+            // 等待下一帧
             yield return new WaitForEndOfFrame();
         }
     }
