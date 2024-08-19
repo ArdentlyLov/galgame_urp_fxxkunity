@@ -14,18 +14,17 @@ public class TextArchitect
 
     private int preTextLength = 0;
     public string fullTargetText => preText + targetText;
-    
+
     //文字效果枚举
     public enum BuildMethod
     {
         instent,
         typewriter,
         fade,
-        effects4
+        floatEffect
     }
-
     public BuildMethod buildMethod = BuildMethod.typewriter;
-    
+
     public Color textColor
     {
         get { return tmpro.color; }
@@ -37,12 +36,19 @@ public class TextArchitect
         get { return baseSpeed * speedMultipliter; }
         set { speedMultipliter = value; }
     }
+
     private const float baseSpeed = 1;
     private float speedMultipliter = 1;
 
-    public int charactersPerCycle { get { return speed <= 2f ? characterMultiplier : speed <= 2.5f ? charactersPerCycle * 2 : charactersPerCycle * 3; } }
-    private int characterMultiplier = 1;
+    public int charactersPerCycle
+    {
+        get
+        {
+            return speed <= 2f ? characterMultiplier : speed <= 2.5f ? charactersPerCycle * 2 : charactersPerCycle * 3;
+        }
+    }
 
+    private int characterMultiplier = 1;
     public bool hurryUp = false;
 
     public TextArchitect(TextMeshProUGUI tmpro_ui)
@@ -61,7 +67,7 @@ public class TextArchitect
         Stop();
         buildProcess = tmpro.StartCoroutine(Building());
         return buildProcess;
-    }    
+    }
     public Coroutine Append(string text)
     {
         preText = tmpro.text;
@@ -73,17 +79,16 @@ public class TextArchitect
 
     private Coroutine buildProcess = null;
     public bool isBuilding => buildProcess != null;
-
     public void Stop()
     {
         if (!isBuilding)
         {
             return;
         }
+
         tmpro.StopCoroutine(buildProcess);
         buildProcess = null;
     }
-
     //构建
     IEnumerator Building()
     {
@@ -96,8 +101,8 @@ public class TextArchitect
             case BuildMethod.fade:
                 yield return Build_Fade();
                 break;
-            case BuildMethod.effects4:
-                yield return Build_Effects();
+            case BuildMethod.floatEffect:
+                yield return Build_floatEffect();
                 break;
         }
         OnComplete();
@@ -107,7 +112,6 @@ public class TextArchitect
         buildProcess = null;
         hurryUp = false;
     }
-
     public void ForceComplete()
     {
         switch (buildMethod)
@@ -119,9 +123,11 @@ public class TextArchitect
                 tmpro.ForceMeshUpdate();
                 break;
         }
+
         Stop();
         OnComplete();
     }
+    
     private void Prepare()
     {
         switch (buildMethod)
@@ -135,18 +141,18 @@ public class TextArchitect
             case BuildMethod.fade:
                 Prepare_Fade();
                 break;
-            case BuildMethod.effects4:
-                Prepare_Effects();
+            case BuildMethod.floatEffect:
+                Prepare_floatEffect();
                 break;
         }
-    }   
+    }
     private void Prepare_Instant()
     {
         tmpro.color = tmpro.color;
         tmpro.text = fullTargetText;
         tmpro.ForceMeshUpdate();
         tmpro.maxVisibleCharacters = tmpro.textInfo.characterCount;
-    }    
+    }
     private void Prepare_Typewriter()
     {
         tmpro.color = tmpro.color;
@@ -161,7 +167,7 @@ public class TextArchitect
 
         tmpro.text += targetText;
         tmpro.ForceMeshUpdate();
-    }    
+    }
     private void Prepare_Fade()
     {
         tmpro.text = preText;
@@ -169,15 +175,16 @@ public class TextArchitect
         {
             tmpro.ForceMeshUpdate();
             preTextLength = tmpro.textInfo.characterCount;
-        }else
+        }
+        else
             preTextLength = 0;
-        
+
         tmpro.text += targetText;
         tmpro.maxVisibleCharacters = int.MaxValue;
         tmpro.ForceMeshUpdate();
 
         TMP_TextInfo textInfo = tmpro.textInfo;
-        
+
         Color colorVisable = new Color(textColor.r, textColor.g, textColor.b, 1);
         Color colorHidden = new Color(textColor.r, textColor.g, textColor.b, 0);
 
@@ -200,25 +207,26 @@ public class TextArchitect
                     vertextColors[charInfo.vertexIndex + v] = colorHidden;
             }
         }
+
         tmpro.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
     }
-
-    private void Prepare_Effects()
+    private void Prepare_floatEffect()
     {
         tmpro.text = preText;
         if (preText != "")
         {
-            tmpro.ForceMeshUpdate();
-            preTextLength = tmpro.textInfo.characterCount;
+            tmpro.ForceMeshUpdate();//强制更新mesh数据，确保字符信息（顶点、颜色等）是最新的
+            preTextLength = tmpro.textInfo.characterCount;//预设文本字符长度
         }
         else
         {
-            preTextLength = 0;
+            preTextLength = 0;//预设文本为0
         }
-
+        //将目标文字追加到预设文本
         tmpro.text += targetText;
+        // 设置最大可见字符数为最大值，确保所有字符都可见
         tmpro.maxVisibleCharacters = int.MaxValue;
-        tmpro.ForceMeshUpdate();
+        tmpro.ForceMeshUpdate(); // 更新 Mesh 数据，以包含目标文本的所有顶点信息
     }
 
     private IEnumerator Build_Typewriter()
@@ -228,7 +236,7 @@ public class TextArchitect
             tmpro.maxVisibleCharacters += hurryUp ? charactersPerCycle * 5 : charactersPerCycle;
             yield return new WaitForSeconds(0.015f / speed);
         }
-    }    
+    }
     private IEnumerator Build_Fade()
     {
         int minRange = preTextLength;
@@ -239,7 +247,7 @@ public class TextArchitect
         TMP_TextInfo textInfo = tmpro.textInfo;
         Color32[] vertextColors = textInfo.meshInfo[textInfo.characterInfo[0].materialReferenceIndex].colors32;
         float[] alphas = new float[textInfo.characterCount];
-        
+
         while (true)
         {
             float fadeSpeed = ((hurryUp ? charactersPerCycle * 5 : charactersPerCycle) * speed) * 4f;
@@ -254,6 +262,7 @@ public class TextArchitect
                 for (int v = 0; v < 4; v++)
                     vertextColors[charInfo.vertexIndex + v].a = (byte)alphas[i];
             }
+
             tmpro.UpdateVertexData(TMP_VertexDataUpdateFlags.Colors32);
 
             bool lastCharacterIsInvisible = !textInfo.characterInfo[maxRange - 1].isVisible;
@@ -261,53 +270,32 @@ public class TextArchitect
             {
                 if (maxRange < textInfo.characterCount)
                     maxRange++;
-                else if(alphas[maxRange - 1] >= 255 || lastCharacterIsInvisible)
+                else if (alphas[maxRange - 1] >= 255 || lastCharacterIsInvisible)
                     break;
             }
+
             yield return new WaitForEndOfFrame();
         }
     }
-
-    private IEnumerator Build_Effects()
+    private IEnumerator Build_floatEffect()
     {
-        Prepare_Effects();
+        TMP_TextInfo textInfo = tmpro.textInfo; // 获取文本信息，包括字符和顶点数据
+        Vector3[] vertices; // 存储字符顶点的数组
+        //---------------------
+        // 获取每个字符，然后按照空格切分成单词，中文字体不用切分
+        
+        float[] phaseOffsets = new float[textInfo.characterCount]; // 存储每个字符的相位偏移量
+        float[] alphaValues = new float[textInfo.characterCount]; // 存储每个字符的透明度
 
-        TMP_TextInfo textInfo = tmpro.textInfo;
-        Vector3[] vertices;
-        // 存储字符顶点的数组
-        float[] phaseOffsets = new float[textInfo.characterCount];
-        // 为每个字符生成一个随机的初始相位偏移量
-        for (int i = preTextLength; i < textInfo.characterCount; i++)
+        for (int i = 0; i < preTextLength; i++)
         {
-            phaseOffsets[i] = Random.Range(0f, Mathf.PI * 2);
+            phaseOffsets[i] = 1;//偏移量
+            alphaValues[i] = 0f;//不透明度
         }
-
-        while (true)
+        while (tmpro.maxVisibleCharacters < tmpro.textInfo.characterCount)
         {
-            // 遍历所有可见的字符
-            for (int i = preTextLength; i < textInfo.characterCount; i++)
-            {
-                TMP_CharacterInfo charInfo = textInfo.characterInfo[i];
-                if (!charInfo.isVisible)
-                    continue;
-
-                vertices = textInfo.meshInfo[charInfo.materialReferenceIndex].vertices;
-
-                // 更新字符顶点的 Y 位置，使其上下浮动
-                float yOffset = Mathf.Sin(Time.time * speed + phaseOffsets[i]) * 0.1f;
-                // `Mathf.Sin(Time.time * speed + phaseOffsets[i])` 生成浮动值，`* 5f` 控制浮动幅度
-                
-                for (int v = 0; v < 4; v++)
-                {
-                    vertices[charInfo.vertexIndex + v].y += yOffset;
-                }
-            }
-
-            // 更新顶点数据
-            tmpro.UpdateVertexData(TMP_VertexDataUpdateFlags.Vertices);
-
-            // 等待下一帧
-            yield return new WaitForEndOfFrame();
+            tmpro.maxVisibleCharacters += charactersPerCycle;
+            yield return new WaitForSeconds(0.015f / speed);
         }
     }
 }

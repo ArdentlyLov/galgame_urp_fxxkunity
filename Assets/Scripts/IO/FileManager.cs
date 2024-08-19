@@ -12,7 +12,6 @@ public class FileManager
         //获取file.txt文件，赋予给filePath
         if (!filePath.StartsWith('/'))
             filePath = FilePaths.root + filePath;
-
         List<string> lines = new List<string>();
         try
         {

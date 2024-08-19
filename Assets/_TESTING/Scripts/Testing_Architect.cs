@@ -1,11 +1,12 @@
 using UnityEngine;
+using DIALOGUE;
 
 namespace TESTING
 {
-
-
     public class Testing_Architect : MonoBehaviour
     {
+        [Header(" Settings ")] 
+        [SerializeField] private float setPlaySpeed;
         DialogueSystem ds;
         TextArchitect architect;
 
@@ -23,11 +24,13 @@ namespace TESTING
         {
             ds = DialogueSystem.instance;
             architect = new TextArchitect(ds.dialogueContainer.dialogueText);
-            architect.buildMethod = TextArchitect.BuildMethod.effects4;
-            architect.speed = 0.5f;
+            architect.buildMethod = TextArchitect.BuildMethod.floatEffect;
         }
         void Update()
         {
+            //播放速度
+            architect.speed = setPlaySpeed;
+
             if (bm != architect.buildMethod)
             {
                 architect.buildMethod = bm;

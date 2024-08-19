@@ -3,27 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DialogueSystem : MonoBehaviour
+namespace DIALOGUE
 {
-    public DialogueContainer dialogueContainer = new DialogueContainer();
-    public static DialogueSystem instance;
-
-    private void Awake()
+    public class DialogueSystem : MonoBehaviour
     {
-        if (instance == null)
+        public DialogueContainer dialogueContainer = new DialogueContainer();
+        public static DialogueSystem instance;
+
+        private void Awake()
         {
-            instance = this;
-        }else
-            DestroyImmediate(gameObject);
-    }
-
-    void Start()
-    {
-        
-    }
-
-    void Update()
-    {
-        
+            if (instance == null)
+            {
+                instance = this;
+            }
+            else
+                DestroyImmediate(gameObject);
+        }
     }
 }
