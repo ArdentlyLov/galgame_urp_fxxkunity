@@ -18,13 +18,13 @@ namespace TESTING
             "i want to say something, come over here",
             "the world is a crazy place somethings",
             "dont lose hope,things will get better",
-            "its a bird? its a plane ? no its super sheltie",
+            "its a bird? its a plane ? no its super sheltie, i am so tried",
         };
         void Start()
         {
             ds = DialogueSystem.instance;
             architect = new TextArchitect(ds.dialogueContainer.dialogueText);
-            architect.buildMethod = TextArchitect.BuildMethod.floatEffect;
+            architect.buildMethod = TextArchitect.BuildMethod.fade;
         }
         void Update()
         {
