@@ -30,5 +30,11 @@ public class MenuManager : MonoBehaviour
     public void ExitGame()
     {
         Debug.Log("已退出游戏");
+    }    
+    
+    public void Mobile()
+    {
+        SceneManager.LoadScene(3);
+        Debug.Log("已进MobileJoyTest界面");
     }
 }

@@ -11,7 +11,7 @@ namespace DIALOGUE
         private ConversationManager conversationManager;
         private TextArchitect architect;
         
-        public static DialogueSystem instance;
+        public static DialogueSystem instance { get; private set; }
 
         public delegate void dialogueSystemEvent();
         public event dialogueSystemEvent onUserPrompt_Next;
