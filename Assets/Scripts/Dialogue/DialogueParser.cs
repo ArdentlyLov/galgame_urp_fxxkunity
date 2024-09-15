@@ -8,7 +8,7 @@ namespace DIALOGUE
     public class DialogueParser
     {
         //commands正则表达式字符串
-        private const string commandsRegexPattern = "\\w*[^\\s]\\(";
+        private const string commandsRegexPattern = @"\w*[^\s]\(";
         public static DIALOGUE_LINE Parse(string rawLine)
         {
             //解析原始对话行

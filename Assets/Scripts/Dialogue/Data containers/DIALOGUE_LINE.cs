@@ -1,16 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
+using UnityEditor.Animations;
+    
 namespace DIALOGUE
 {
     public class DIALOGUE_LINE
     {
-        public string speaker;
+        public DL_SPEAKER_DATA speaker;
         public DL_DIALOGUE_DATA dialogue;
         public string commands;
 
-        public bool hasspeaker => speaker != string.Empty;
+        public bool hasspeaker => false;//speaker != string.Empty;
         public bool hasDialogue => dialogue.hasDialogue;
         public bool hasCommands => commands != string.Empty;
         // hasDialogue 属性的逻辑是检查 dialogue 变量是否不为空。如果 dialogue 不是一个空字符串，那么 hasDialogue 将返回 true，
@@ -18,7 +16,7 @@ namespace DIALOGUE
         
         public DIALOGUE_LINE(string speaker, string dialogue, string commands)
         {
-            this.speaker = speaker;
+            this.speaker = new DL_SPEAKER_DATA(speaker);
             this.dialogue = new DL_DIALOGUE_DATA(dialogue);
             this.commands = commands;
         }

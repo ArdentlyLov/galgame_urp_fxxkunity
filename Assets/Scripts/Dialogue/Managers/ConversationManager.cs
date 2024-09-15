@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace DIALOGUE
 {
@@ -23,8 +22,8 @@ namespace DIALOGUE
             this.architect = architect;
             dialogueSystem.onUserPrompt_Next += OnUserPrompt_Next;
         }
-
-        private void OnUserPrompt_Next() 
+        
+        private void OnUserPrompt_Next()
         {
             userPrompt = true;
         }
@@ -69,7 +68,7 @@ namespace DIALOGUE
         {
             //show or hide the speaker name if there is one present
             if (line.hasspeaker)
-                dialogueSystem.ShowSpeakerName(line.speaker);
+                dialogueSystem.ShowSpeakerName(line.speaker.displayName);
             
             //build dialogue
             yield return BuildLineSegment(line.dialogue);
