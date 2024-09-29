@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -8,8 +7,6 @@ public class DL_DIALOGUE_DATA : MonoBehaviour
 {
     public List<DIALOGUE_SEGMENT> segments;
     private const string segmentIdentifierPattern = @"\{[ca]\}|\{w[ca]\s\d*\.?\d*\}";
-
-    public bool hasDialogue => segments.Count > 0;
     
     //分段标识符模式
     public DL_DIALOGUE_DATA(string rawDialogue)
