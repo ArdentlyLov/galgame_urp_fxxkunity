@@ -1,3 +1,4 @@
+
 星涵 "lets play some music!" playSong("Funky Beets" -v 0.75 -p 1), setMood(chill)
 
 artist "you have odd taste in music." playVoice("eeee_v2" -v 1.5), setBackground(Room1 -t "Dialogue Lines" -s 3.5)

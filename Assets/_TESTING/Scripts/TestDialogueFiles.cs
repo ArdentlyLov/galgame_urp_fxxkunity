@@ -49,22 +49,22 @@ public class TestDialogueFiles : MonoBehaviour
         // }
         
         //测试command
-        foreach (string line in lines)
-        {
-            if (string.IsNullOrWhiteSpace(line))
-                continue;
-            
-            DIALOGUE_LINE dl = DialogueParser.Parse(line);
-
-            for (int i = 0; i < dl.commandsData.commands.Count; i++)
-            {
-                DL_COMMAND_DATA.Command command = dl.commandsData.commands[i];
-                Debug.Log($"Command [{i}] '{command.name}' has arguments [{string.Join(", ", command.arguments)}]");
-            }
-        }
+        // foreach (string line in lines)
+        // {
+        //     if (string.IsNullOrWhiteSpace(line))
+        //         continue;
+        //     
+        //     DIALOGUE_LINE dl = DialogueParser.Parse(line);
+        //
+        //     for (int i = 0; i < dl.commandsData.commands.Count; i++)
+        //     {
+        //         DL_COMMAND_DATA.Command command = dl.commandsData.commands[i];
+        //         Debug.Log($"Command [{i}] '{command.name}' has arguments [{string.Join(", ", command.arguments)}]");
+        //     }
+        // }
 
         
-        // DialogueSystem.instance.Say(lines);
+        DialogueSystem.instance.Say(lines);
     }
     
 }

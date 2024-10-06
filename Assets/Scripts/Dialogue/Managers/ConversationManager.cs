@@ -57,6 +57,7 @@ namespace DIALOGUE
                 if (line.hasDialogue)
                     yield return Line_RunDialogue(line);
                 //run any commands
+                
                 if (line.hasCommands)
                     yield return Line_RunCommands(line);
                 
@@ -79,7 +80,13 @@ namespace DIALOGUE
         }        
         IEnumerator Line_RunCommands(DIALOGUE_LINE line)
         {
-            Debug.Log(line.commandsData);
+            // Debug.Log(line.commandsData);
+            List<DL_COMMAND_DATA.Command> commands = line.commandsData.commands;
+
+            foreach (DL_COMMAND_DATA.Command command in commands)
+            {
+                CommandManager.instance.Execute(command.name, command.arguments);
+            }
             yield return null;
         }
 

@@ -67,17 +67,24 @@ public class CommandManager : MonoBehaviour
     {
         if (command is Action)
             command.DynamicInvoke();
-        
-        if (command is Action<string>)
+
+        else if (command is Action<string>)
             command.DynamicInvoke(args[0]);
         
-        if (command is Action<string[]>)
+        else if (command is Action<string[]>)
             command.DynamicInvoke((object)args);
 
         else if (command is Func<IEnumerator>)
-        {
             yield return ((Func<IEnumerator>)command)();
-        }
+        
+        else if (command is Func<string, IEnumerator>)
+            yield return ((Func<string, IEnumerator>)command)(args[0]);
+        
+        else if (command is Func<string[], IEnumerator>)
+            yield return ((Func<string[], IEnumerator>)command)(args);
+
+
+
     }
     
 }
